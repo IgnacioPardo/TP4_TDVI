@@ -164,3 +164,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 src/.DS_Store
+src/train_out/wavs/
+src/data_out/
+src/train_out/specs/
+src/train_epochs_out/
+
+*.ckpt
+.DS_Store
+src/.DS_Store
