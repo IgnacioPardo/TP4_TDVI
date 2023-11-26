@@ -333,7 +333,7 @@ Para poder utilizarlas, las adaptamos al mismo formato que las canciones del dat
 
 A oído los resultados fueron satisfactorios, ya que se puede escuchar la canción original en la reconstrucción. A continuación se muestran algunos ejemplos de audios encodeados y decodeados con el modelo `autoencoder_alt3`. Los audios parecen provenir de adentro de un contender pero no se escucha ruido de fondo como esperabamos.
 
-![Reconstrución Canción de Cumbia Argentina con autoencoder_alt3](src/plots/waveform_reconstruction_new_songs.png)
+![Reconstrución Música Nueva con autoencoder_alt3](src/plots/waveform_reconstruction_new_songs.png)
 
 En cuanto a la perdida, el MSE en la mayoría de los casos es un orden de maginitud mayor que el obtenido con las canciones del dataset, pero sigue siendo al rededor de $0.01$ por lo que consideramos que es un buen resultado.
 
