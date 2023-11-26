@@ -42,9 +42,14 @@ El primer modelo que utilizamos fue un autoencoder definido en la clase `autoenc
 ```
 La arquitectura del modelo es la siguiente:
 
-\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura Net1}}]{src/plots/autoencoder.gv.pdf}
+\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura \\ Autoencoder}}]{src/plots/autoencoder.gv.pdf}
 
-Este modelo no nos obtuvo buenos resultados, ya que el audio generado salia con un ruido constante de fondo. Inicialmente consideramos podía ser por la interpolación por lo que decidimos cambiar la arquitectura del modelo para que el tamaño de salida del decoder sea el mismo que el de entrada. Para esto, cambiamos el tamaño de los kernels de las convoluciones y deconvoluciones, y agregamos una capa de pooling en el encoder y una de unpooling en el decoder.
+Este modelo no nos obtuvo buenos resultados, ya que el audio generado salia con un ruido constante de fondo. 
+
+[Audio de Test](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/original_test.wav)
+[Audio Reconstruido](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/reconstruction_bad_old.wav)
+
+Inicialmente consideramos podía ser por la interpolación por lo que decidimos cambiar la arquitectura del modelo para que el tamaño de salida del decoder sea el mismo que el de entrada. Para esto, cambiamos el tamaño de los kernels de las convoluciones y deconvoluciones, y agregamos una capa de pooling en el encoder y una de unpooling en el decoder.
 
 El modelo resultante, `autoencoder_alt2`, tiene la siguiente arquitectura:
 
@@ -58,7 +63,7 @@ El modelo resultante, `autoencoder_alt2`, tiene la siguiente arquitectura:
 
 \newpage
 
-\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura Net2}}]{src/plots/autoencoder_alt.gv.pdf}
+\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura \\ Autoencoder alt 2}}]{src/plots/autoencoder_alt.gv.pdf}
 
 Este modelo tampoco nos obtuvo buenos resultados. Como no estabamos logrando remover el ruido decidimos comenzar con un modelo desde cero implementado en la clase `autoencoder_alt3`. La idea que tuvimos fue mantener el vector encodeado en un tamaño mayor y bajar la cantidad de features.
 
@@ -72,7 +77,7 @@ Este modelo tampoco nos obtuvo buenos resultados. Como no estabamos logrando rem
 
 La arquitectura de este modelo es la siguiente:
 
-\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura Net3}}]{src/plots/autoencoder_alt3.gv.pdf}
+\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura \\ Autoencoder alt 3}}]{src/plots/autoencoder_alt3.gv.pdf}
 
 \newpage
 
@@ -125,7 +130,7 @@ Después de cada epoch, evalúa el modelo en un conjunto de validación y guarda
 
 Con el objetivo de encontrar un tamaño de vector óptimo para el análisis, probamos con diferentes configuraciones de autoencoders, que generan salidas de igual tamaño, pero diferentes salidas del autoencoder y del decoder. Estas variaciones se pueden dar por la definición de la arquitectura del autoencoder, ya que la cantidad y tipo de capas puede influir en las variaciones del tamaño de salida. También se pueden dar variaciones por la elección de la dimensionalidad del espacio latente, por las capas de pooling en el encoder usadas o por la definición de los hiper parámetros como stride y padding.
 
-Los 3 modelos con los que obtuvimos mejores rendimientos no cuentan con funciones de activación en el proceso de encodear y desencodear ya que observamos que agregando las mismas, no mejoraba el rendimiento de los modelos. Para llegar a estos partimos de modelos más complejos, con funciones de activación como “ReLU” y “Tahn” y con Batch Normalization, pero fuimos disminuyendo la complejidad de los mismos, obteniendo ademas del “autoencoer_alt_3” los autoencoders “autoencoder_alt_4” y “autoencoderalt_5” que logran menores tamaños de salida del encoder.
+Los 3 modelos con los que obtuvimos mejores rendimientos no cuentan con funciones de activación en el proceso de encodear y desencodear ya que observamos que agregando las mismas, no mejoraba el rendimiento de los modelos. Para llegar a estos partimos de modelos más complejos, con funciones de activación como “ReLU” y “Tahn” y con Batch Normalization, pero fuimos disminuyendo la complejidad de los mismos, obteniendo ademas del “autoencoer_alt_3” los autoencoders “autoencoder alt 4” y “autoencoderalt_5” que logran menores tamaños de salida del encoder.
 
 
 Los tamaños durante el proceso de encodear y desencodear de los modelos son los siguientes:
@@ -152,20 +157,19 @@ Los tamaños durante el proceso de encodear y desencodear de los modelos son los
 
 Y sus arquitecturas se encuentran en las siguientes figuras:
 
-\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura Net4}}]{src/plots/autoencoder_alt4.gv.pdf}
+\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura \\ Autoencoder alt 4}}]{src/plots/autoencoder_alt4.gv.pdf}
 
-\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura Net5}}]{src/plots/autoencoder_alt5.gv.pdf}
+\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura \\ Autoencoder alt 5}}]{src/plots/autoencoder_alt5.gv.pdf}
 
 ## Resultados de los modelos entrenados
 
 A continuación se muestran algunos ejemplos de audios encodeados y decodeados con los modelos `autoencoder_alt3`, `autoencoder_alt4` y `autoencoder_alt5`.
 
-
 ### Autoencoder_alt3 - Encoding a 1/2
 
 ![Reconstrución Sample de Train con autoencoder_alt3](src/plots/waveform_reconstruction.png)
 
-[Audio Original]() - [Audio Reconstruido]()
+[Audio Original](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/original_train.wav) - [Audio Reconstruido](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/reconstruction.wav)
 
 ![Reconstrución Samples de Train con autoencoder_alt3 de distintas clases](src/plots/waveform_reconstruction_train.png)
 
@@ -181,21 +185,54 @@ Notamos que, aunque minimo, la MSE entre la señal con el postprocesamiento y la
 |--------------|---------------|--------------------|
 | 0.004022     | 0.003808      | 0.003754           |
 
+\newpage
+
 ### Autoencoder_alt4 - Encoding a 1/3
+
+Para el mismo sample de Train que utilizamos para el modelo `autoencoder_alt3`, obtuvimos los siguientes resultados con el modelo `autoencoder_alt4`.
 
 ![Reconstrución Sample de Train con autoencoder_alt4](src/plots/waveform_reconstruction_alt4.png)
 
-[Audio Original]() - [Audio Reconstruido]()
+[Audio Original](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/original_train.wav) - [Audio Reconstruido](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/reconstruction_alt4.wav)
 
 ### Autoencoder_alt5 - Encoding a 1/12
 
+Finalmente, para el mismo sample de Train que utilizamos para los modelos `autoencoder_alt3` y `autoencoder_alt4`, obtuvimos los siguientes resultados con el modelo `autoencoder_alt5`.
+
 ![Reconstrución Sample de Train con autoencoder_alt5](src/plots/waveform_reconstruction_alt5.png)
 
-[Audio Original]() - [Audio Reconstruido]()
+[Audio Original](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/original_train.wav) - [Audio Reconstruido](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/reconstruction_alt5.wav)
+
+### Comparación de MSE entre Autoencoders
+
+El siguiente cuadro muestra la comparación de las MSE obtenidas con los distintos modelos.
+
+| | Sample | Alt3 | Alt4 | Alt5 |
+|---|---|---|---|---|
+|-| jazz | 0.0024 | 0.0026 | 0.0036 | 
+|-| metal | 0.0014 | 0.0015 | 0.0014 | 
+|-| jazz | 0.0018 | 0.0013 | 0.0019 | 
+|-| pop | 0.0185 | 0.0222 | 0.0319 | 
+|-| pop | 0.0004 | 0.0001 | 0.0001 | 
+|-| metal | 0.0164 | 0.0214 | 0.0215 | 
+|-| reggae | 0.0010 | 0.0004 | 0.0005 | 
+|-| hiphop | 0.0093 | 0.0070 | 0.0068 | 
+|-| classical | 0.0004 | 0.0001 | 0.0001 | 
+|-| reggae | 0.0062 | 0.0061 | 0.0090 | 
+| Mean|-| 0.0058 | 0.0063 | 0.0077 | 
+| Min |-| 0.0004 | 0.0001 | 0.0001 | 
+| Max |-| 0.0185 | 0.0222 | 0.0319 | 
 
 ### Sobre datos de Test
 
-A medida que el modelo se va entrenando, implementamos que se guarden las reconstrucciones de un sample de Test en archivos de Numpy para poder visualizar su progresión.
+A medida que el modelo se va entrenando, implementamos que se guarden las reconstrucciones de un sample de Test en archivos de Numpy para poder visualizar su progresión. El audio de Test que utilizamos es el siguiente:
+
+[Audio de Test](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/original_test.wav)
+[Reconstrucción de Test con autoencoder_alt3](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_test_epoch_rec_wav_4)
+
+![Reconstrución Sample de Test con autoencoder_alt3](src/plots/reconstructed_waveform_vs_og_.png)
+
+Al igual que para los datos de Train, para los datos de Test también obtuvimos mejores resultados con el modelo `autoencoder_alt3`. A continuación se muestran las perdidas para distintos samples de Test.
 
 ![Reconstrución Sample de Test con autoencoder_alt3](src/plots/waveform_reconstruction_epochs_test.png)
 
@@ -205,8 +242,9 @@ Por último nos interesaba ver la onda de la señal decodeada contra la original
 
 Pudimos notar que la onda parece acompañar a la original, pero con un ruido constante de fondo en forma de picos.
 
-## 2) Análisis exploratorio de los vectores latentes
+\newpage
 
+## 2) Análisis exploratorio de los vectores latentes
 
 ### Analisis de Componentes Principales
 
@@ -220,14 +258,18 @@ Al hacer PCA a 2 dimensiones no logramos discernir ninguna estructura muy críti
 
 ![PCA 2D sobre 10 samples de cada clase](src/plots/pca_2d_encoding_10_samples.png)
 
-Los resultados que obtuvimos no lograron ser muy diferentes a los anteriores, por lo que decidimos hacer PCA a 3 dimensiones para poder visualizar mejor los datos. A continuación se muestran los resultados obtenidos.
+\newpage
+
+Los resultados que obtuvimos no lograron ser muy diferentes a los anteriores, por lo que decidimos hacer PCA a 3 dimensiones para poder visualizar mejor los datos. En algunos batches de 10 canciones de cada clase, algunas clases parecían seguir seguir un patron respecto a las componentes principales, pero en otros batches no se observaba nada, por lo que decidimos continuar la exploración por otro lado. A continuación se muestran los resultados obtenidos:
 
 ![PCA 3D sobre un sample de cada clase](src/plots/pca_3d_encoding_un_sample.png)
 ![PCA 3D sobre 10 samples de cada clase](src/plots/pca_3d_encoding_10_samples.png)
 
+\newpage
+
 ### Similitud entre canciones
 
-Por otra parte, partimos de los vectores originales, tanto los codificados como los decodificados, y tomamos 10 muestras de cada clase. Calculamos la similitud coseno entre las muestras de cada clase, considerando tanto los vectores originales de una canción en una clase como los vectores originales de otra canción de la misma clase, así como los vectores codificados de una clase y los vectores codificados de una canción de la misma clase. Este análisis nos permitió observar las similitudes o diferencias entre las muestras.
+Nuevamente, partimos de los vectores originales, tanto los codificados como los decodificados, y tomamos 10 muestras de cada clase. Calculamos la similitud coseno entre las muestras de cada clase, considerando tanto los vectores originales de una canción en una clase como los vectores originales de otra canción de la misma clase, así como los vectores codificados de una clase y los vectores codificados de una canción de la misma clase. Este análisis nos permitió observar las similitudes o diferencias entre las muestras.
 
 ![Similitud Coseno entre canciones de la misma clase](src/plots/similitud_coseno_og_enc_dec_intra_clase.png)
 
@@ -241,42 +283,46 @@ Por último, realizamos un análisis de similitud entre clases. Para ello, tomam
 
 Los resultados refutaron nuestra hipotesis ya que las distribuciones de similitud coseno entre canciones de distintas clases resultaron ser muy similares a las distribuciones de similitud coseno entre canciones de la misma clase. Esto nos dió un mejor entendimiento del porque los resultados de PCA no fueron los esperados, ya que al encodear las canciones, se pierde mucha información y se obtienen vectores muy similares entre si.
 
+\newpage
 
 ## 3) Encodear música nueva
 
-Una vez entrenado el modelo y pasado nuestro propio test de validación auditivo, es decir, una vez que al escuchar la reconstrucción de test estabamos conformes con el resultado, utilizamos nuevas canciones fuera del dataset para corroborar que funcione y el resultado fue positivo. El resultado fue similar al que obtuvimos con las canciones del dataset. Para esta sección no usamos todos los modelos que en entrenamiento, sino que usamos solo el `autoencoder_alt_3`, previamente explicado, porque como solo reduce la entrada a la mitad, permite obtener mejores resultados para estas canciones nuevas al dataset.  Para poder utilizarlas, las adaptamos al mismo formato que las canciones del dataset. 
+Una vez entrenado el modelo y pasado nuestro propio test de validación auditivo, es decir, una vez que al escuchar la reconstrucción de test estabamos conformes con el resultado, utilizamos nuevas canciones fuera del dataset para corroborar que funcione y el resultado fue positivo. El resultado fue similar al que obtuvimos con las canciones del dataset. Para esta sección no usamos todos los modelos que en entrenamiento, sino que usamos solo el `autoencoder alt 3`, previamente explicado, porque como solo reduce la entrada a la mitad, permite obtener mejores resultados para estas canciones nuevas al dataset.  Para poder utilizarlas, las adaptamos al mismo formato que las canciones del dataset. 
 
 Los audios que elegimos para esta sección son los siguientes:
+
 
 ### Canciones fuera del Dataset de Otros Generos
 
 Por una parte probamos con canciones de otros géneros que no se encuentran en el dataset.
 
 #### Cumbia Argentina
-- [No me arrepiento de este amor - Gilda]()
-- [Nunca Me Faltes - Antonio Rios]()
+
+- [No me arrepiento de este amor - Gilda](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/gilda.wav)
+- [Nunca Me Faltes - Antonio Rios](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/nunca_me_faltes.wav)
 
 #### Rap y Trap
-- [Rap God - Eminem]()
-- [Givenchy - Duki]()
+
+- [Rap God - Eminem](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/eminem.wav)
+- [Givenchy - Duki](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/duki.wav)
 
 #### Funk
-- [J.A.M. - Cory Wong]()
+
+- [J.A.M. - Cory Wong](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/jam.wav)
 
 #### Rock Progresivo
-- [All Falls Apart - Polyphia]()
+
+- [All Falls Apart - Polyphia](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/polyphia.wav)
 
 ### Audios Varios
-
 Ademas probamos con otros audios que no son canciones, sino que son sonidos o audios de otros tipos.
 
-- [Ringtone Nokia]()
-- [Himno Argentino Cancha]()
-- [Trompetas de la 12 - Boca]()
-- [Audio Solo de Guitarra]()
-- [Sorting Sounds - Stable Sort GCC]()
-- [Relato Siamofuori della Copa - Italia 90]()
-
+- [Ringtone Nokia](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/nokia.wav)
+- [Himno Argentino Cancha](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/himno.wav)
+- [Trompetas de la 12 - Boca](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/boca.wav)
+- [Audio Solo de Guitarra](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/solo.wav)
+- [Sorting Sounds - Stable Sort GCC](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/stable_sort_gcc.wav)
+- [Relato Siamofuori della Copa - Italia 90](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/siamofuori.wav)
 
 ### Resultados
 
@@ -286,20 +332,22 @@ A oído los resultados fueron satisfactorios, ya que se puede escuchar la canci�
 
 En cuanto a la perdida, el MSE en la mayoría de los casos es un orden de maginitud mayor que el obtenido con las canciones del dataset, pero sigue siendo al rededor de $0.01$ por lo que consideramos que es un buen resultado.
 
-| Canción | MSE |
-|---------|-----|
-| gilda | MSE: 0.00939|
-| nokia | MSE: 0.02169|
-| polyphia | MSE: 0.01835|
-| himno | MSE: 0.01384|
-| solo | MSE: 0.00458|
-| boca | MSE: 0.00275|
-| stable_sort_gcc | MSE: 0.01060|
-| nunca_me_faltes | MSE: 0.00844|
-| jam | MSE: 0.00963|
-| duki | MSE: 0.01171|
-| eminem | MSE: 0.01434|
-| siamofuori | MSE: 0.01181|
+| Canción | MSE | WAV |
+|---------|-----|-----|
+| gilda | MSE: 0.00939| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_gilda) |
+| nokia | MSE: 0.02169| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_nokia) |
+| polyphia | MSE: 0.01835| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_polyphia) |
+| himno | MSE: 0.01384| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_himno) |
+| solo | MSE: 0.00458| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_solo) |
+| boca | MSE: 0.00275| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_boca) |
+| stable_sort_gcc | MSE: 0.01060| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_stable_sort_gcc) |
+| nunca_me_faltes | MSE: 0.00844| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_nunca_me_faltes) |
+| jam | MSE: 0.00963| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_jam) |
+| duki | MSE: 0.01171| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_duki) |
+| eminem | MSE: 0.01434| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_eminem) |
+| siamofuori | MSE: 0.01181| [Audio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/rec_new_siamofuori) |
+
+\newpage
 
 ## 4) Generación de Música
 
@@ -307,9 +355,12 @@ Con la intención de crear música original, comenzamos utilizando un tensor con
 
 ![Reconstrución de un tensor aleatorio con autoencoder_alt3](src/plots/waveform_artificial_ruido.png)
 
+[Audio a partir de un tensor aleatorio](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/artificial_ruido.wav)
+
 Posteriormente, exploramos la opción de un vector cuyos valores estaban determinados por la función seno.
 
 ![Reconstrución de un tensor con valores seno con autoencoder_alt3](src/plots/waveform_artificial_seno.png)
+[Audio a partir de un tensor generado por la función seno](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/artificial_seno.wav)
 
 Algo que nos sorpendio es que la onda generada no se encuentra centrada en 0 por lo que no se puede escuchar. Esto es porque nuestro modelo no cuenta con una función de activación estilo "Tanh" que nos permita obtener valores entre -1 y 1. Para poder escuchar la onda le sumamos la media de la onda pero igual no se logra escuchar mucho.
 
@@ -317,9 +368,17 @@ Después de estas primeras experiencias, decidimos tomar dos canciones perteneci
 
 ![Reconstrución de la suma de dos canciones con autoencoder_alt3](src/plots/suma_encodings.png)
 
-Por último, decidimos tomar dos canciones pertenecientes a la misma categoría y que tengan BPMs (beats por minuto) cercanos para luego promediar sus codificaciones. En este caso obtuvimos un muy buen resultado, cabe resaltar que en parte fue el azar pero también se debe a que las canciones elegidas son muy parecidas entre si por haber hecho la selección de BPMs cercanos.
+[Sample 1](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/to_sum_sample_1.wav) | [Sample 2](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/to_sum_sample_2.wav) | [Deocde de Suma de Encodings](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/sum_encodings.wav)
+
+\newpage
+
+### Importancia de Atributos
+
+Por último, decidimos tomar otro par de canciones de las mismas propiedades para luego promediar sus codificaciones. En este caso obtuvimos un muy buen resultado, cabe resaltar que en parte fue el azar pero también se debe a que las canciones elegidas son muy parecidas entre si por haber hecho la selección de BPMs cercanos.
 
 ![Reconstrución del promedio de dos canciones con autoencoder_alt3](src/plots/avg_encodings.png)
+
+[Sample 1](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/to_avg_sample_1.wav) | [Sample 2](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/to_avg_sample_2.wav) | [Deocode de Promedio Encodings](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/avg_2encs.wav.wav)
 
 Por último, entrenamos un clasificador Random Forest a partir de los encodings de las canciones del dataset. Para cada encoding, toma los $n$ atributos más importantes y los descartamos con el objetivo de observar cómo estos afectan en la reconstrucción. Decidimos primero anular los primeros 1000 atributos mas significativos a la clasificación y obtuvimos los siguientes resultados:
 
