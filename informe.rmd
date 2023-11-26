@@ -8,7 +8,7 @@ date: "`r Sys.Date()`"
 lang: "es-ES"
 output: pdf_document
 toc: true
-# bibliography: bibliography.bib
+bibliography: src/bibliography.bib
 header-includes:
   - \usepackage{pdfpages}
   - \DeclareUnicodeCharacter{0301}{*************************************}
@@ -29,7 +29,7 @@ Todos los archivos de audio de los que se habla en este informe, tanto los que s
 
 Comenzamos utilizando la clase brindada en la consigna llamada MusicDataset para cargar y procesar el conjunto de datos de música en formato WAV. Una vez que realizamos esto, separamos los datos en los conjuntos de validación, testeo y entrenamiento. La división que tomamos en cuenta fue fijar los tamaños de los conjuntos de validación y prueba en 100, mientras que el tamaño del conjunto de entrenamiento se calcula para abarcar el resto de los datos. Luego seteamos los DataLoaders respectivos a cada conjunto con un batch_size de 10 y 20. 
 
-Con los distintos conjuntos ya creados, comenzamos con la creación e implementación del primer modelo usado. Para la visualización de las canciones, utilizamos los respectivos espectrogramas y formas de onda de cada canción. En primera instancia nos quedamos y basamos nuestro análisis en los espectrogramas. Para esto modificamos el MusicDataset para que por cada canción devuelva tambien un espectograma y un espectograma Mel a partir de las funciones de Torchaudio. Los espectogramas resultantes tenian una resolución de `512x256` por lo que comenzamos utilizando autoencoders cuyas convoluciones eran 2D. Esta idea fue descartada aunque en un comienzo su arquitectura se mantuvo pero con convoluciones 1D.
+Con los distintos conjuntos ya creados, comenzamos con la creación e implementación del primer modelo usado. Para la visualización de las canciones, utilizamos los respectivos espectrogramas y formas de onda de cada canción. En primera instancia nos quedamos y basamos nuestro análisis en los espectrogramas. Para esto modificamos el MusicDataset para que por cada canción devuelva tambien un espectograma y un espectograma Mel a partir de las funciones de Torchaudio. Los espectogramas resultantes tenian una resolución de `512x256` por lo que comenzamos utilizando un autoencoder del estilo de UNET [@ronneberger_2015_unet], cuyas convoluciones eran 2D pero descartando los `skips` ya que "filtraban" información al decoder. Esta idea fue descartada aunque en un comienzo su arquitectura se mantuvo pero con convoluciones 1D.
 
 El primer modelo que utilizamos fue un autoencoder definido en la clase `autoencoder`. Un problema que tenía este modelo era que al decodear la canción, el tamaño obtenido no era exactamente el mismo que el original, por lo que luego de pasar por el bloque de deconvoluciones, le aplicamos una interpolación al tamaño original.
 
@@ -131,7 +131,6 @@ Después de cada epoch, evalúa el modelo en un conjunto de validación y guarda
 Con el objetivo de encontrar un tamaño de vector óptimo para el análisis, probamos con diferentes configuraciones de autoencoders, que generan salidas de igual tamaño, pero diferentes salidas del autoencoder y del decoder. Estas variaciones se pueden dar por la definición de la arquitectura del autoencoder, ya que la cantidad y tipo de capas puede influir en las variaciones del tamaño de salida. También se pueden dar variaciones por la elección de la dimensionalidad del espacio latente, por las capas de pooling en el encoder usadas o por la definición de los hiper parámetros como stride y padding.
 
 Los 3 modelos con los que obtuvimos mejores rendimientos no cuentan con funciones de activación en el proceso de encodear y desencodear ya que observamos que agregando las mismas, no mejoraba el rendimiento de los modelos. Para llegar a estos partimos de modelos más complejos, con funciones de activación como “ReLU” y “Tahn” y con Batch Normalization, pero fuimos disminuyendo la complejidad de los mismos, obteniendo ademas del “autoencoer_alt_3” los autoencoders “autoencoder alt 4” y “autoencoderalt_5” que logran menores tamaños de salida del encoder.
-
 
 Los tamaños durante el proceso de encodear y desencodear de los modelos son los siguientes:
 
@@ -252,11 +251,14 @@ Para el análisis planteado, comenzamos utilizando el método PCA (Análisis de 
 
 Un primer análisis que realizamos fue sobre los vectores latentes obtenidos con el modelo `autoencoder_alt3`. Seleccionamos una canción de muestra de cada clase y obtuvimos su encoding de tamaño `1x55125`. Para aplicar la reducción de dimensionalidad le hicimos un reshape a cada vector para que quede de tamaño `55125 // 5 x 5`. Luego, aplicamos PCA con 2 componentes y graficamos los resultados para observar la dispersión en el espacio 2D, y obtener información sobre la variabilidad y la estructura de las codificaciones en cada clase.
 
+
 ![PCA 2D sobre un sample de cada clase](src/plots/pca_2d_encoding_un_sample.png)
 
-Al hacer PCA a 2 dimensiones no logramos discernir ninguna estructura muy crítica en los datos. A simple vista se puede decir que algunas canciones se encuentran mas dispersas que otras sobre el espacio de las componentes principales. Para continuar la exploración, en vez de encodear una canción de cada clase, encodeamos 10 canciones de cada clase, de esta forma nuestro tensor sería "representativo" de una clase y no de una canción en particular. Para ello a partir de un tensor de tamaño `10x1x55125` concatenamos los encodings de las 10 canciones de cada clase y obtuvimos uno de tamaño `1x551250` al que tambien le hicimos un reshape para que quede de tamaño `551250 // 5 x 5`. Luego, aplicamos PCA con 2 componentes y graficamos los resultados para observar la dispersión en el espacio 2D, y obtener información sobre la variabilidad y la estructura de las codificaciones en cada clase.
+Al hacer PCA a 2 dimensiones no logramos discernir ninguna estructura muy crítica en los datos. A simple vista se puede decir que algunas canciones se encuentran mas dispersas que otras sobre el espacio de las componentes principales. Para continuar la exploración, en vez de encodear una canción de cada clase, encodeamos 10 canciones de cada clase, de esta forma nuestro tensor sería "representativo" de una clase y no de una canción en particular.
 
 ![PCA 2D sobre 10 samples de cada clase](src/plots/pca_2d_encoding_10_samples.png)
+
+Para ello a partir de un tensor de tamaño `10x1x55125` concatenamos los encodings de las 10 canciones de cada clase y obtuvimos uno de tamaño `1x551250` al que tambien le hicimos un reshape para que quede de tamaño `551250 // 5 x 5`. Luego, aplicamos PCA con 2 componentes y graficamos los resultados para observar la dispersión en el espacio 2D, y obtener información sobre la variabilidad y la estructura de las codificaciones en cada clase.
 
 \newpage
 
@@ -264,6 +266,7 @@ Los resultados que obtuvimos no lograron ser muy diferentes a los anteriores, po
 
 ![PCA 3D sobre un sample de cada clase](src/plots/pca_3d_encoding_un_sample.png)
 ![PCA 3D sobre 10 samples de cada clase](src/plots/pca_3d_encoding_10_samples.png)
+
 
 \newpage
 
@@ -275,9 +278,11 @@ Nuevamente, partimos de los vectores originales, tanto los codificados como los 
 
 A partir de los resultados concluimos que, entre canciones de las mismas clases, tanto los vectores originales como decodificados son ortogonales entre si (es decir no son iguales), pero los vectores codificados resultan ser muy similares, esto lo podemos ver ya que la media de las distribuciones de similitud coseno entre canciones de la misma clase ronda los $\tilde 0.8$, nuestra primera hipótesis es que esto se debe a que las canciones de una misma clase tienen características similares, por lo que al encodearlas se obtienen vectores similares entre si.
 
+\newpage
+
 ### Similitud entre clases
 
-Por último, realizamos un análisis de similitud entre clases. Para ello, tomamos 10 muestras de cada clase y calculamos la similitud coseno entre las muestras de cada clase, considerando tanto los vectores originales de una clase como los vectores originales de otra clase, así como los vectores codificados de una clase y los vectores codificados de otra clase. Este análisis nos permitió observar las similitudes o diferencias entre las clases.
+Por último, realizamos un análisis de similitud entre clases. Para ello, con las mismas 10 muestras de cada clase del item anterior calculamos la similitud coseno entre los encodings de todos los samples. No consideramos los vectores originales ya que no nos interesaba la similitud entre canciones ya que si las canciones entre la misma clase daban ortogonales entre si, asumimos que entre clases iba a ser lo mismo. Este análisis nos permitió observar las similitudes o diferencias entre las clases en nuestros encodings.
 
 ![Similitud Coseno entre canciones de distintas clases](src/plots/similitud_coseno_enc_inter_clase.png)
 
@@ -287,10 +292,7 @@ Los resultados refutaron nuestra hipotesis ya que las distribuciones de similitu
 
 ## 3) Encodear música nueva
 
-Una vez entrenado el modelo y pasado nuestro propio test de validación auditivo, es decir, una vez que al escuchar la reconstrucción de test estabamos conformes con el resultado, utilizamos nuevas canciones fuera del dataset para corroborar que funcione y el resultado fue positivo. El resultado fue similar al que obtuvimos con las canciones del dataset. Para esta sección no usamos todos los modelos que en entrenamiento, sino que usamos solo el `autoencoder alt 3`, previamente explicado, porque como solo reduce la entrada a la mitad, permite obtener mejores resultados para estas canciones nuevas al dataset.  Para poder utilizarlas, las adaptamos al mismo formato que las canciones del dataset. 
-
-Los audios que elegimos para esta sección son los siguientes:
-
+Una vez entrenado el modelo y pasado nuestro propio test de validación auditivo, es decir, una vez que al escuchar la reconstrucción de test estabamos conformes con el resultado, utilizamos nuevas canciones fuera del dataset para corroborar que funcione y el resultado fue positivo. El resultado fue similar al que obtuvimos con las canciones del dataset. Para esta sección no usamos todos los modelos que en entrenamiento, sino que usamos solo el `autoencoder alt 3`, previamente explicado, porque como solo reduce la entrada a la mitad, permite obtener mejores resultados para estas canciones nuevas al dataset. Los audios que elegimos para esta sección son los siguientes:
 
 ### Canciones fuera del Dataset de Otros Generos
 
@@ -324,6 +326,8 @@ Ademas probamos con otros audios que no son canciones, sino que son sonidos o au
 - [Sorting Sounds - Stable Sort GCC](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/stable_sort_gcc.wav)
 - [Relato Siamofuori della Copa - Italia 90](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/data/new_songs/siamofuori.wav)
 
+Para poder utilizarlas, las adaptamos al mismo formato que las canciones del dataset. Todas los audios fueron descargados de YouTube como archivos `MP3` y luego convertidos a formato WAV. Al leerlos con `torchaudio` nos dimos cuenta que tenían distintos canales, por lo que los convertimos a mono. Luego, los recortamos a 5 segundos y los re-sampleamos a 22050 Hz ya que se habían grabado en 44100 Hz.
+
 ### Resultados
 
 A oído los resultados fueron satisfactorios, ya que se puede escuchar la canción original en la reconstrucción. A continuación se muestran algunos ejemplos de audios encodeados y decodeados con el modelo `autoencoder_alt3`. Los audios parecen provenir de adentro de un contender pero no se escucha ruido de fondo como esperabamos.
@@ -351,6 +355,8 @@ En cuanto a la perdida, el MSE en la mayoría de los casos es un orden de magini
 
 ## 4) Generación de Música
 
+### A partir de tensores nuevos
+
 Con la intención de crear música original, comenzamos utilizando un tensor con valores aleatorios y procedimos a decodificarlo. Sin embargo, el resultado de este proceso fue esencialmente ruido. 
 
 ![Reconstrución de un tensor aleatorio con autoencoder_alt3](src/plots/waveform_artificial_ruido.png)
@@ -364,7 +370,9 @@ Posteriormente, exploramos la opción de un vector cuyos valores estaban determi
 
 Algo que nos sorpendio es que la onda generada no se encuentra centrada en 0 por lo que no se puede escuchar. Esto es porque nuestro modelo no cuenta con una función de activación estilo "Tanh" que nos permita obtener valores entre -1 y 1. Para poder escuchar la onda le sumamos la media de la onda pero igual no se logra escuchar mucho.
 
-Después de estas primeras experiencias, decidimos tomar dos canciones pertenecientes a la misma categoría y que tengan BPMs (beats por minuto) cercanos para luego sumar sus codificaciones. Al decodificar este resultado, notamos que el sonido resultante era similar a la suma de las dos canciones originales.
+### A partir de encodings de canciones
+
+Después de estas primeras experiencias, decidimos tomar dos canciones que, por una parte sean pertenecientes a la misma categoría, y ademas, a partir de una implementación de detección de beats por minuto (BPM) [@python_bpm], nos aseguramos que las canciones sean mas cercanas aún, para luego sumar sus codificaciones. Al decodificar este resultado, notamos que el sonido resultante era similar a la suma de las dos canciones originales.
 
 ![Reconstrución de la suma de dos canciones con autoencoder_alt3](src/plots/suma_encodings.png)
 
@@ -372,13 +380,15 @@ Después de estas primeras experiencias, decidimos tomar dos canciones perteneci
 
 \newpage
 
-### Importancia de Atributos
-
 Por último, decidimos tomar otro par de canciones de las mismas propiedades para luego promediar sus codificaciones. En este caso obtuvimos un muy buen resultado, cabe resaltar que en parte fue el azar pero también se debe a que las canciones elegidas son muy parecidas entre si por haber hecho la selección de BPMs cercanos.
 
 ![Reconstrución del promedio de dos canciones con autoencoder_alt3](src/plots/avg_encodings.png)
 
 [Sample 1](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/to_avg_sample_1.wav) | [Sample 2](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/to_avg_sample_2.wav) | [Deocode de Promedio Encodings](https://github.com/IgnacioPardo/TP4_TDVI/raw/main/src/wavs/avg_2encs.wav.wav)
+
+\newpage
+
+### Importancia de Atributos
 
 Por último, entrenamos un clasificador Random Forest a partir de los encodings de las canciones del dataset. Para cada encoding, toma los $n$ atributos más importantes y los descartamos con el objetivo de observar cómo estos afectan en la reconstrucción. Decidimos primero anular los primeros 1000 atributos mas significativos a la clasificación y obtuvimos los siguientes resultados:
 
@@ -386,10 +396,54 @@ Por último, entrenamos un clasificador Random Forest a partir de los encodings 
 
 ![Reconstrución de un encoding con los primeros 1000 atributos anulados con autoencoder_alt3 - Zoom](src/plots/encoding_mods_zoom.png)
 
-MSE - Sample Original y Reconstruido: 0.0049
-MSE - Sample Original y Reconstruido con los primeros 1000 atributos anulados: 0.0084
-MSE - Reconstruido y Reconstruido con los primeros 1000 atributos anulados: 0.0034
+- MSE - Sample Original y Reconstruido: 0.0049
+- MSE - Sample Original y Reconstruido con los primeros 1000 atributos anulados: 0.0084
+- MSE - Reconstruido y Reconstruido con los primeros 1000 atributos anulados: 0.0034
 
 Para explorar más a fondo, ploteamos la MSE entre el sample original y el reconstruido a partir de encodings con los primeros $n$ atributos anulados, para distintos valores de $n$.
 
 ![MSE entre el sample original y el reconstruido a partir de encodings con los primeros $n$ atributos anulados](src/plots/mse_vs_n_mods.png)
+
+\newpage
+
+## Otras ideas descartadas
+
+### Espectogramas Mel
+
+En un comienzo utilizamos Espectogramas Mel [@melspectrogram] para entrenar los modelos. La arquitectura del modelo toma un tamaño de entrada de `512x256` (131072 features) y lo reduce a `128x32x16]` (4096 features en 16 canales`. 
+
+El siguiente gráfico muestra un esfuerzo de entrenamiento con este tipo de espectogramas. Arriba a la izquierda el espectograma Mel original, de izquierda a derecha y de arriba a abajo, el espectograma Mel reconstruido luego de cada epoch.
+
+![Reconstrucción de un espectograma Mel durante entrenamiento](src/plots/recs_specs.png)
+
+![Onda de la señal original y la decodeada](src/plots/rec_spec_2_wave.png)
+
+Este modelo se descartó luego de conversar con la catedra ya que no es lo que se esperaba del trabajo práctico. Sin embargo nos pareció interesante mostrar los resultados obtenidos. Ademas, el modelo que utilizamos para entrenar los espectogramas Mel dió origen al modelo `autoencoder` que detallamos al comienzo del informe.
+
+\includepdf[pages=1, pagecommand={\thispagestyle{plain}\subsection{Arquitectura \\ UNET}}]{src/plots/unet.gv.pdf}
+
+### Función de perdida
+
+A pesar de que la función de pérdida de la que hablamos durante el informe es MSE, en un instante del desarrollo planteamos una nueva función de perdida. Para ello entrenamos un modelo XGBoost sobre los datos de Train para clasificar a partir de una onda el genero al que pertenece, esto lo hicimos para ademas de tener en cuenta el error cuadrático medio, tener en cuenta el error de clasificación de la reconstrucción.
+
+La función de perdida se define como:
+
+$$
+    L = \alpha * MSE + (1 - \alpha) * CE
+$$
+
+Donde $MSE$ es el error cuadrático medio entre la onda original y la reconstruida, $CE$ es el error de clasificación de la reconstrucción y $\alpha$ es un hiper parámetro que pondera la importancia de cada error. Para este caso, $\alpha = 0.5$.
+
+Esta función de perdida no nos dió buenos resultados, ya que el clasificador XGBoost estaba bastante sobreajustado a las canciones de Train y penalizaba mucho la reconstrucción de canciones de Test. Ademas nos pareció que el computo extra que se necesitaba para calcular el error de clasificación no valía la pena por lo que decidimos descartar esta función de perdida.
+
+### Data augmentation de las canciones
+
+Otra idea que tuvimos fue hacer data augmentation de las canciones. Planteamos dos metodos de data augmentation, uno que consistía en agregar ruido blanco a la señal y otro que consistía en hacer un pitch shift de la señal. Para agregar ruido blanco a la señal, utilizamos la función `torch.randn_like` para generar un tensor de ruido blanco del mismo tamaño que la señal y luego lo sumamos a la señal. Para hacer un pitch shift de la señal utilizamos la transformación `PitchShift` de `Torchaudio` [@hira_2023_audio].
+
+Ambas implementaciones de data augmentation se encuentran en el notebook de la entrega. Se evaluaron sobre el primer autoencoder y no haber dado mejores resultados se comento esa sección y no se volvió a utilizar sobre los futuros modelos aunque podría haber sido interesante revisitarlo.
+
+\newpage
+
+## Referencias
+
+<div id="refs"></div>
