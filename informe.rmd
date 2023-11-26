@@ -21,7 +21,7 @@ Para este trabajo práctico se nos puso como objetivo implementar un encodeador 
 
 Luego, estos vectores encontrados deben poder desencodearse para volver a reproducir el sonido original. Una vez aplicados el encoding y decoding, realizamos un análisis exploratorio para comprender y encontrar relaciones de estos nuevos vectores, los cuales serán explicados en el desarrollo del informe.
 
-La base de datos usada para el desarrollo del mismo fue “GTZAN”. Esta cuenta con 1000 canciones, cada una con una duración de 30 segundos. Las canciones están divididas y clasificadas en 10 géneros distintos: blues, classical, country, disco, hip hop, jazz, metal, pop, reggae, y rock. 
+La base de datos usada para el desarrollo del mismo fue GTZAN [@gtzan]. Esta cuenta con 1000 canciones, cada una con una duración de 30 segundos. Las canciones están divididas y clasificadas en 10 géneros distintos: blues, classical, country, disco, hip hop, jazz, metal, pop, reggae, y rock. 
 
 Todos los archivos de audio de los que se habla en este informe, tanto los que se encodearon/desencodearon como la musica generada, se encuentran en la carpeta `wavs/`, los modelos entrenados en la carpeta `src/models/` y los plots en la carpeta `src/plots/`.
 
